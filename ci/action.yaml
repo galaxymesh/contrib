@@ -35,6 +35,7 @@ runs:
           };
           await exec.exec('git', ['status', '--porcelain'], options)
           if (out.length > 0) {
+            require('fs').writeFileSync('ent_error_report.txt', out);
             core.info(out)
             core.setFailed('Generated code not checked in. Run go generate ./...')
             return
