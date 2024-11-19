@@ -1,5 +1,5 @@
-directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-directive @goModel(model: String, models: [String!]) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @goModel(model: String, models: [String!], forceGenerate: Boolean) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
 type BillProduct implements Node {
   id: ID!
   name: String!
@@ -77,7 +77,7 @@ type Category implements Node {
   types: CategoryTypes
   duration: Duration
   count: Uint64
-  strings: [String!]
+  strings: [String!] @deprecated(reason: "use `string` instead")
   todos(
     """
     Returns the elements in the list that come after the specified cursor.
@@ -318,6 +318,7 @@ input CreateTodoInput {
   priority: Int
   text: String!
   init: Map
+  value: Int
   parentID: ID
   childIDs: [ID!]
   categoryID: ID
@@ -974,6 +975,7 @@ type Todo implements Node {
   init: Map
   custom: [Custom!]
   customp: [Custom]
+  value: Int!
   parent: Todo
   children(
     """
@@ -1145,6 +1147,17 @@ input TodoWhereInput {
   categoryIDIsNil: Boolean
   categoryIDNotNil: Boolean
   """
+  value field predicates
+  """
+  value: Int
+  valueNEQ: Int
+  valueIn: [Int!]
+  valueNotIn: [Int!]
+  valueGT: Int
+  valueGTE: Int
+  valueLT: Int
+  valueLTE: Int
+  """
   parent edge predicates
   """
   hasParent: Boolean
@@ -1208,6 +1221,7 @@ input UpdateTodoInput {
   text: String
   init: Map
   clearInit: Boolean
+  value: Int
   parentID: ID
   clearParent: Boolean
   addChildIDs: [ID!]
